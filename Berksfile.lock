@@ -1,0 +1,14 @@
+DEPENDENCIES
+  build-essential (~> 2.1.3)
+  homebrew (~> 1.9)
+  pantry
+    git: git@github.com:opscode-cookbooks/pantry.git
+    revision: 52425e37f941b5f6e7bae00142bc2380a8487c02
+    ref: 52425e3
+
+GRAPH
+  build-essential (2.1.3)
+  homebrew (1.9.2)
+  pantry (0.0.2)
+    build-essential (~> 2.1.3)
+    homebrew (~> 1.9)
