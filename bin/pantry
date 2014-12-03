@@ -38,6 +38,7 @@ done
 shift `expr $OPTIND - 1`
 
 if [ ! -f /opt/chefdk/version-manifest.txt ]; then
+    echo ''
     echo 'Downloading ChefDK.'
     curl -L https://www.chef.io/chef/install.sh | bash -s -- -P chefdk
     if [ $? -ne 0 ]; then
@@ -48,9 +49,11 @@ fi
 
 if [ ! -f Berksfile.lock ]
 then
+    echo 'Vendoring cookbooks with Berkshelf.'
     berks vendor
     if [ $? -ne 0 ]
     then
+        echo ''
         echo 'Berkshelf failed to vendor required cookbooks!'
         exit 120
     fi
@@ -58,6 +61,8 @@ fi
 
 if [ "x$run_chef" = "xtrue" ]
 then
+    echo ''
+    echo 'Running `chef-client` with the base role.'
     chef-client -z -o 'role[base]'
 else
     echo ''
