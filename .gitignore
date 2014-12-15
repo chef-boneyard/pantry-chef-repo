@@ -29,6 +29,8 @@ binstubs/
 # Test Kitchen and Berkshelf
 .kitchen/
 Berksfile.lock
+berks-cookbooks
+.chef/local-mode-cache/
 
 # Vagrant
 Vagrantfile
