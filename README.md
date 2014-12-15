@@ -53,6 +53,12 @@ Workstations are personalized work environments. Pantry is opinionated where it 
 * [Windows support is not yet implemented](https://github.com/opscode-cookbooks/pantry/issues/1).
 * [Linux support is not yet implemented](https://github.com/opscode-cookbooks/pantry/issues/2).
 
+Homebrew cask prior to version 0.50.0 has [an issue](https://github.com/caskroom/homebrew-cask/issues/7946) fixed in 0.50.0+ that requires upgrading `brew-cask`. TL;DR:
+
+```
+brew update && brew upgrade brew-cask && brew cleanup
+```
+
 ## License and Author
 
 - Author: Joshua Timberman <joshua@chef.io>
