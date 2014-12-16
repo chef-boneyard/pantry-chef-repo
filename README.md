@@ -22,6 +22,34 @@ To perform the installation and run Chef with the "base" role, use the `-c` opti
 sudo ./bin/pantry -c
 ```
 
+### Installing Packages
+
+Packages are installed by populating attribute arrays with a list of names to install. For OS X, these are handled by the `homebrew` cookbook's formulas and casks attributes. For example, update `dna.json` with the following content:
+
+```json
+{
+  "homebrew": {
+    "formulas": [
+      "coreutils",
+      "go",
+      "postgresql"
+    ],
+    "casks": [
+      "google-chrome",
+      "skype",
+      "vagrant"
+    ]
+}
+```
+
+`./bin/pantry` will use the `dna.json` file to add these attributes to the node.
+
+```
+sudo ./bin/pantry -c
+```
+
+**Note** The `dna.json` file is in the repository but it is `.gitignore`d so local changes aren't preserved. Future versions will use a node JSON in `./nodes`.
+
 ## bin/pantry
 
 The `pantry` script takes 0 or 1 argument. It does the following:
