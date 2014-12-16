@@ -23,6 +23,9 @@
 # This script exits 100 if it isn't executed as root or with sudo.
 # This script exits 110 if `install.sh` fails to install ChefDK.
 # This script exits 120 if `berks vendor` fails for any reason.
+#
+# Any failing command run by this script may cause it to exit (or not)
+# and return its own exit code (or 0).
 if [ $USER != 'root' ]; then
     echo 'You must execute this script as root.'
     echo "sudo ${0}"
@@ -57,13 +60,13 @@ then
         echo 'Berkshelf failed to vendor required cookbooks!'
         exit 120
     fi
+    echo ''
 fi
 
 if [ "x$run_chef" = "xtrue" ]
 then
-    echo ''
-    echo 'Running `chef-client` with the base role.'
-    chef-client -z -o 'role[base]'
+    echo 'Running `chef-client` with the pantry default recipe.'
+    /opt/chefdk/embedded/bin/chef-client -z -o 'recipe[pantry]'
 else
     echo ''
     echo 'To have this script automatically run Chef with the `base` role, run'
