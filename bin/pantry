@@ -53,7 +53,7 @@ fi
 if [ ! -f Berksfile.lock ]
 then
     echo 'Vendoring cookbooks with Berkshelf.'
-    berks vendor
+    berks vendor && chmod 0644 Berksfile.lock
     if [ $? -ne 0 ]
     then
         echo ''
