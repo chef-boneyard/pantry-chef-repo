@@ -50,6 +50,45 @@ sudo ./bin/pantry -c
 
 **Note** The `dna.json` file is in the repository but it is `.gitignore`d so local changes aren't preserved. Future versions will use a node JSON in `./nodes`.
 
+### Using a Chef Server
+
+**This is optional**.
+
+Pantry can be used with a Chef Server. Since this isn't the default, it does require a little more work on your part. For this example, I'll use Hosted Chef as my server.
+
+**Note** Don't use `-c` with the `bin/pantry` script. It assumes running `chef-client` with local mode.
+
+Before running `chef-client`, do the following:
+
+Create `/etc/chef/client.rb` with at least the following content, and copy your organization's validation client key (`ORGNAME-validator.pem`) to `/etc/chef/validation.pem`.
+
+```ruby
+chef_server_url 'https://api.opscode.com/organizations/ORGNAME'
+validation_client_name 'ORGNAME-validator'
+```
+
+Create `.chef/knife.rb` or `~/.chef/knife.rb` with the following content. Replace ORGNAME and HOSTED_USERNAME with your values.
+
+```ruby
+chef_server_url 'https://api.opscode.com/organizations/ORGNAME'
+node_name 'HOSTED_USERNAME'
+client_key 'path/to/your/HOSTED_USERNAME.pem'
+```
+
+Obtain the validation client key from your Chef Server. For example, I downloaded mine from the Hosted Chef starter kit. Copy it to `/etc/chef`.
+
+Upload the cookbooks from this repository.
+
+```
+berks upload
+```
+
+Run Chef!
+
+```
+sudo chef-client -r 'recipe[pantry]' -j dna.json
+```
+
 ## bin/pantry
 
 The `pantry` script takes 0 or 1 argument. It does the following:
