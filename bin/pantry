@@ -26,50 +26,52 @@
 #
 # Any failing command run by this script may cause it to exit (or not)
 # and return its own exit code (or 0).
-if [ $USER != 'root' ]; then
+if [[ $USER != 'root' ]]; then
     echo 'You must execute this script as root.'
     echo "sudo ${0}"
     exit 100
 fi
 
-while getopts c opt
+run_chef=
+why_run=
+while getopts cw opt
 do
     case "$opt" in
-        c) run_chef=true;;
+        c) run_chef=1;;
+        w) why_run=1;;
     esac
 done
-shift `expr $OPTIND - 1`
+shift $((OPTIND - 1))
 
-if [ ! -f /opt/chefdk/version-manifest.txt ]; then
-    echo ''
+if [[ ! -f /opt/chefdk/version-manifest.txt ]]; then
+    echo
     echo 'Downloading ChefDK.'
     curl -L https://www.chef.io/chef/install.sh | bash -s -- -P chefdk
-    if [ $? -ne 0 ]; then
+    if [[ $? -ne 0 ]]; then
         echo 'Failed to install ChefDK. Exiting!'
         exit 110
     fi
 fi
 
-if [ ! -f Berksfile.lock ]
-then
+if [[ ! -f Berksfile.lock ]]; then
     echo 'Vendoring cookbooks with Berkshelf.'
     berks vendor && chmod 0644 Berksfile.lock
-    if [ $? -ne 0 ]
-    then
-        echo ''
+    if [[ $? -ne 0 ]]; then
+        echo
         echo 'Berkshelf failed to vendor required cookbooks!'
         exit 120
     fi
-    echo ''
+    echo
 fi
 
-if [ "x$run_chef" = "xtrue" ]
-then
-    echo 'Running `chef-client` with the pantry default recipe.'
-    /opt/chefdk/embedded/bin/chef-client -z -o 'recipe[pantry]'
+if [[ -n $run_chef ]]; then
+    chef_opts=
+    [[ -n $why_run ]] && chef_opts="-W"
+    echo 'Running chef-client with the pantry default recipe.'
+    /opt/chefdk/embedded/bin/chef-client -z $chef_opts -o 'recipe[pantry]'
 else
-    echo ''
-    echo 'To have this script automatically run Chef with the `base` role, run'
+    echo
+    echo 'To have this script automatically run Chef with the base role, run'
     echo "'$0 -c'"
     exit 0
 fi
