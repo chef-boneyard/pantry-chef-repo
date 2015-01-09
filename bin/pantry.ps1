@@ -22,7 +22,7 @@ Import-Module BitsTransfer
 function Get-ChefDK {
   Try {
     Write-Host "Downloading ChefDK"
-    Start-BitsTransfer "https://www.chef.io/chef/download-chefdk?p=windows&pv=2008r2&m=x86_64&v=latest" "chefdk.msi"
+    #Start-BitsTransfer "https://www.chef.io/chef/download-chefdk?p=windows&pv=2008r2&m=x86_64&v=latest" "chefdk.msi"
   } Catch {
     Write-Error $_.Exception
     Exit 110
