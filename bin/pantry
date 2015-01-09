@@ -33,10 +33,12 @@ if [[ $USER != 'root' ]]; then
 fi
 
 run_chef=
-while getopts c opt
+why_run=
+while getopts cw opt
 do
     case "$opt" in
         c) run_chef=1;;
+        w) why_run=1;;
     esac
 done
 shift $((OPTIND - 1))
@@ -63,8 +65,10 @@ if [[ ! -f Berksfile.lock ]]; then
 fi
 
 if [[ -n $run_chef ]]; then
+    chef_opts=
+    [[ -n $why_run ]] && chef_opts="-W"
     echo 'Running chef-client with the pantry default recipe.'
-    /opt/chefdk/embedded/bin/chef-client -z -o 'recipe[pantry]'
+    /opt/chefdk/embedded/bin/chef-client -z $chef_opts -o 'recipe[pantry]'
 else
     echo
     echo 'To have this script automatically run Chef with the base role, run'
