@@ -6,6 +6,6 @@ chef_repo_path File.join(current_dir, '..')
 json_attribs json_attribs_file if File.exist?(json_attribs_file)
 
 cookbook_path [
-  File.join(current_dir, '..', 'cookbooks'),
-  File.join(current_dir, '..', 'berks-cookbooks')
+  File.expand_path(File.join(current_dir, '..', 'cookbooks')),
+  File.expand_path(File.join(current_dir, '..', 'berks-cookbooks'))
 ]
