@@ -4,5 +4,9 @@
      ],
     "casks": [
     ]
+  },
+  "chocolatey": {
+    "packages": [
+    ]
   }
 }
