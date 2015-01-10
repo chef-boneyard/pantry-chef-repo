@@ -32,13 +32,28 @@ if [ $USER != 'root' ]; then
     exit 100
 fi
 
-while getopts c opt
+while getopts cu opt
 do
     case "$opt" in
         c) run_chef=true;;
+        u) upgrade=true;;
     esac
 done
 shift `expr $OPTIND - 1`
+
+if [ "x$upgrade" = "xtrue" ]
+then
+    if [ `which pkgutil` ]
+    then
+        echo 'Removing existing ChefDK installation'
+        # this is the part of the show where we wish pkgutil had an
+        # uninstall option. Also, we assume reinstall down yonder, so
+        # we don't bother with the links in `/usr/bin`.
+        pkgutil --forget com.getchef.pkg.chefdk && rm -rf /opt/chefdk
+    fi
+    echo 'Removing Berksfile.lock so cookbooks can be updated'
+    rm -f Berksfile.lock
+fi
 
 if [ ! -f /opt/chefdk/version-manifest.txt ]; then
     echo ''
@@ -66,11 +81,10 @@ fi
 if [ "x$run_chef" = "xtrue" ]
 then
     echo 'Running `chef-client` with the pantry default recipe.'
-    /opt/chefdk/embedded/bin/chef-client -z -o 'recipe[pantry]'
+    /opt/chefdk/embedded/bin/chef-client -z -r 'recipe[pantry]'
 else
-    echo ''
-    echo 'To have this script automatically run Chef with the `base` role, run'
-    echo "'$0 -c'"
+    echo 'To have this script automatically run Chef with the "base" role, run:'
+    echo "$0 -c"
     exit 0
 fi
 
