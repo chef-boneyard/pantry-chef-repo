@@ -1,12 +1,10 @@
 {
   "homebrew": {
-    "formulas": [
-     ],
-    "casks": [
-    ]
+    "formulas": [],
+    "casks": []
   },
   "chocolatey": {
-    "packages": [
-    ]
-  }
+    "packages": []
+  },
+  "packages": []
 }
