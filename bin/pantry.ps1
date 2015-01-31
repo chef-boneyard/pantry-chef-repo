@@ -48,7 +48,7 @@ function Install-ChefDK {
   $env:PATH = $env:PATH + ";" + "C:\opscode\chefdk\bin"
 }
 
-function Test-ChefDK { 
+function Test-ChefDK {
   Test-Path "C:\opscode\chefdk\version-manifest.txt"
 }
 
@@ -64,10 +64,10 @@ function Get-Cookbooks {
   }
 }
 
-function Invoke-ChefClient 
+function Invoke-ChefClient
 {
   Write-Host "Running chef-client with the pantry default recipe."
-  chef-client -z -o 'recipe[pantry]'
+  chef-client -z -r 'recipe[pantry]'
   if ($LASTEXITCODE -ne 0) {
     Write-Error "chef-client run failed"
     Exit 130
