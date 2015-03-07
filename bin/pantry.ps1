@@ -86,5 +86,5 @@ if ($RunChef) {
   Write-Host 'Running chef-client with the pantry default recipe.'
   chef-client -z -o 'recipe[pantry]' -c .chef/config.rb
 }else {
-  Write-Host 'To have this script automatically run Chef with the base role, run with -RunChef'
+  Write-Host 'To have this script automatically run Chef with the "pantry::default" recipe, run with -RunChef'
 }
