@@ -22,6 +22,12 @@ To perform the installation and run Chef with the "base" role, use the `-c` opti
 sudo ./bin/pantry -c
 ```
 
+To perform the installation and run Chef with a *specific* role, use the `-r` option with the name of the role in quotes.
+
+```
+sudo ./bin/pantry -c -r "role[dev-workstation]"
+```
+
 ### Installing Packages
 
 Packages are installed by populating attribute arrays with a list of names to install. For OS X, these are handled by the `homebrew` cookbook's formulas and casks attributes. For example, update `dna.json` with the following content:
