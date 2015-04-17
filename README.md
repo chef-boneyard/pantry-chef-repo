@@ -4,6 +4,14 @@ Welcome to the Pantry!
 
 Pantry is a workstation automation cookbook and Chef repository. The cookbook itself is shared on the [Supermarket community site](https://supermarket.chef.io/cookbooks/pantry), and has its own [git repository](https://github.com/opscode-cookbooks/pantry).
 
+TL;DR:
+
+```
+git clone https://github.com/chef/pantry-chef-repo
+cd pantry-chef-repo
+sudo ./bin/pantry -c
+```
+
 ## Getting Started
 
 Get this repository on your system. You can clone it if you have `git` installed, or you can download the `zip archive`.
