@@ -32,14 +32,22 @@ if [ $USER != 'root' ]; then
     exit 100
 fi
 
-while getopts cu opt
+while getopts cup opt
 do
     case "$opt" in
         c) run_chef=true;;
         u) upgrade=true;;
+        p) prerelease=true;;
     esac
 done
 shift `expr $OPTIND - 1`
+
+if [ "x$prerelease" = "xtrue" ]
+then
+    preopt='-p'
+else
+    preopt=' '
+fi
 
 if [ "x$upgrade" = "xtrue" ]
 then
@@ -51,28 +59,35 @@ then
         # we don't bother with the links in `/usr/bin`.
         pkgutil --forget com.getchef.pkg.chefdk && rm -rf /opt/chefdk
     fi
-    echo 'Removing Berksfile.lock so cookbooks can be updated'
-    rm -f Berksfile.lock
+    echo 'Removing Policyfile.lock.json so cookbooks are upgraded too'
+    rm -f Policyfile.lock.json
 fi
 
 if [ ! -f /opt/chefdk/version-manifest.txt ]; then
     echo ''
     echo 'Downloading ChefDK.'
-    curl -L https://www.chef.io/chef/install.sh | bash -s -- -P chefdk
+    curl -L https://www.chef.io/chef/install.sh | bash -s -- $preopt -P chefdk
+
     if [ $? -ne 0 ]; then
         echo 'Failed to install ChefDK. Exiting!'
         exit 110
     fi
 fi
 
-if [ ! -f Berksfile.lock ]
+# We check that the Policyfile.rb exists first because someone might
+# download this script and run it without having the full repository.
+if [ -f Policyfile.rb ] && [ ! -f Policyfile.lock.json ]
 then
-    echo 'Vendoring cookbooks with Berkshelf.'
-    berks vendor && chmod 0644 Berksfile.lock
+    echo 'Installing Policy to ChefDK cookbook cache and exporting repository to zero-repo.'
+    chef install && chmod 0644 Policyfile.lock.json
+    chef export zero-repo --force
+
+    [ ! -z $SUDO_USER ] && chown -R $SUDO_USER Policyfile.lock.json zero-repo
+
     if [ $? -ne 0 ]
     then
         echo ''
-        echo 'Berkshelf failed to vendor required cookbooks!'
+        echo 'Chef Policyfile failed to install and export cookbooks!'
         exit 120
     fi
     echo ''
@@ -80,10 +95,13 @@ fi
 
 if [ "x$run_chef" = "xtrue" ]
 then
-    echo 'Running `chef-client` with the pantry default recipe.'
-    /opt/chefdk/embedded/bin/chef-client -z -r 'recipe[pantry]'
+    echo 'Running `chef-client` with the default Policyfile.rb.'
+    /opt/chefdk/embedded/bin/chef-client -z
+    echo 'In the future, you can modify the Policyfile.rb, then run'
+    echo '`chef update` and `chef export zero-repo`, then rerun chef client with'
+    echo '`sudo /opt/chefdk/embedded/bin/chef-client -z` from this directory.'
 else
-    echo 'To have this script automatically run Chef with the "pantry::default" recipe, run:'
+    echo 'To have this script automatically run Chef with the default Policyfile.rb, run:'
     echo "$0 -c"
     exit 0
 fi

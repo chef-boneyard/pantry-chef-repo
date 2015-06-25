@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+# TODO: Support option for installing ChefDK prerelease, and upgrading.
 param (
   [switch]$RunChef
 )
@@ -53,12 +53,14 @@ function Test-ChefDK {
 }
 
 function Get-Cookbooks {
-  $LockExists = Test-Path "Berksfile.lock"
-  if (-Not $LockExists) {
-    Write-Host "Vendoring cookbooks with Berkshelf."
-    berks vendor
+  $PolicyfileExists = Test-Path "Policyfile.rb"
+  $LockExists = Test-Path "Policyfile.lock.json"
+  if ($PolicyfileExists -And -Not $LockExists) {
+    Write-Host "Installing Policy to ChefDK cookbook cache and exporting repository to zero-repo."
+    chef install
+    chef export zero-repo --force
     if ($LASTEXITCODE -ne 0) {
-      Write-Error "Berkshelf failed to vendor required cookbooks!"
+      Write-Error "Chef Policyfile failed to install and export cookbooks!"
       Exit 120
     }
   }
@@ -67,7 +69,7 @@ function Get-Cookbooks {
 function Invoke-ChefClient
 {
   Write-Host "Running chef-client with the pantry default recipe."
-  chef-client -z -r 'recipe[pantry]'
+  chef-client -z
   if ($LASTEXITCODE -ne 0) {
     Write-Error "chef-client run failed"
     Exit 130
@@ -83,8 +85,10 @@ if ((Test-ChefDK) -eq $False) {
 Get-Cookbooks
 
 if ($RunChef) {
-  Write-Host 'Running chef-client with the pantry default recipe.'
-  chef-client -z -o 'recipe[pantry]' -c .chef/config.rb
+  Invoke-ChefClient
+  Write-Host "In the future, you can modify the Policyfile.rb, then run"
+  Write-Host "`chef update` and `chef export zero-repo`, then rerun chef client with"
+  Write-Host "`chef-client -z` from this directory."
 }else {
   Write-Host 'To have this script automatically run Chef with the "pantry::default" recipe, run with -RunChef'
 }
