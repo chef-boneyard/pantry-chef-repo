@@ -32,11 +32,13 @@ if [ $USER != 'root' ]; then
     exit 100
 fi
 
+run_list='recipe[pantry]'
 while getopts cu opt
 do
     case "$opt" in
         c) run_chef=true;;
         u) upgrade=true;;
+        r) run_list="$OPTARG";;
     esac
 done
 shift `expr $OPTIND - 1`
@@ -80,8 +82,8 @@ fi
 
 if [ "x$run_chef" = "xtrue" ]
 then
-    echo 'Running `chef-client` with the pantry default recipe.'
-    /opt/chefdk/embedded/bin/chef-client -z -r 'recipe[pantry]'
+    echo "Running \`chef-client\` with the $run_list."
+    /opt/chefdk/embedded/bin/chef-client -z -r "$run_list"
 else
     echo 'To have this script automatically run Chef with the "pantry::default" recipe, run:'
     echo "$0 -c"
