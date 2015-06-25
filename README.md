@@ -4,7 +4,7 @@ Welcome to the Pantry!
 
 Pantry is a workstation automation cookbook and Chef repository. The cookbook itself is shared on the [Supermarket community site](https://supermarket.chef.io/cookbooks/pantry), and has its own [git repository](https://github.com/opscode-cookbooks/pantry).
 
-TL;DR:
+## TL;DR:
 
 ```
 git clone https://github.com/chef/pantry-chef-repo
@@ -24,7 +24,7 @@ To just perform the installation:
 sudo ./bin/pantry
 ```
 
-To perform the installation and run Chef with the `pantry::default` recipe, use the `-c` option.
+To perform the installation and run Chef with the default Policyfile.rb, use the `-c` option.
 
 ```
 sudo ./bin/pantry -c
@@ -32,31 +32,22 @@ sudo ./bin/pantry -c
 
 ### Installing Packages
 
-Packages are installed by populating attribute arrays with a list of names to install. For OS X, these are handled by the `homebrew` cookbook's formulas and casks attributes. For example, update `dna.json` with the following content:
+Packages are installed by populating attribute arrays with a list of names to install. For OS X, these are handled by the `homebrew` cookbook's formulas and casks attributes. For Windows, these are handled by Chocolatey.
 
-```json
-{
-  "homebrew": {
-    "formulas": [
-      "coreutils",
-      "go",
-      "postgresql"
-    ],
-    "casks": [
-      "google-chrome",
-      "skype",
-      "vagrant"
-    ]
-}
+Update the Policyfile.rb attributes to modify the package lists you want to install.
+
+```ruby
+default['homebrew']['formulas'] = %w(coreutils go postgresql)
+default['homebrew']['casks'] = %w(google-chrome skype vagrant)
 ```
 
-`./bin/pantry` will use the `dna.json` file to add these attributes to the node.
+`./bin/pantry` will use the Policyfile.rb to add these attributes to the node. Then update the Policyfile.lock.json and export the repository.
 
 ```
-sudo ./bin/pantry -c
+chef update
+chef export --force zero-repo
+sudo chef-client -z
 ```
-
-**Note** The `dna.json` file is in the repository but it is `.gitignore`d so local changes aren't preserved. Future versions will use a node JSON in `./nodes`.
 
 ### Using a Chef Server
 
@@ -81,6 +72,9 @@ Create `.chef/knife.rb` or `~/.chef/knife.rb` with the following content. Replac
 chef_server_url 'https://api.opscode.com/organizations/ORGNAME'
 node_name 'HOSTED_USERNAME'
 client_key 'path/to/your/HOSTED_USERNAME.pem'
+use_policyfile true
+deployment_group 'pantry-chef-server'
+versioned_cookbooks true
 ```
 
 Obtain the validation client key from your Chef Server. For example, I downloaded mine from the Hosted Chef starter kit. Copy it to `/etc/chef`.
@@ -88,13 +82,14 @@ Obtain the validation client key from your Chef Server. For example, I downloade
 Upload the cookbooks from this repository.
 
 ```
-berks upload
+chef install
+chef push
 ```
 
 Run Chef!
 
 ```
-sudo chef-client -r 'recipe[pantry]' -j dna.json
+sudo chef-client
 ```
 
 ## bin/pantry
@@ -102,8 +97,10 @@ sudo chef-client -r 'recipe[pantry]' -j dna.json
 The `pantry` script takes 0 or 1 argument. It does the following:
 
 1. Install ChefDK using CHEF's installation script that downloads the package with the [Omnitruck API](https://docs.chef.io/api_omnitruck.html).
-1. "Vendors" the required cookbooks into `berks-cookbooks` using Berkshelf.
+1. "Vendors" the required cookbooks into `zero-repo` using Chef Policyfiles.
 1. Optionally runs `chef-client` (using "local mode") with the `base` role in this repository if the `-c` argument is used.
+
+For more information about Policyfiles, see its [README](https://github.com/opscode/chef-dk/blob/master/POLICYFILE_README.md).
 
 ## Scope
 
@@ -118,14 +115,16 @@ Workstations are personalized work environments. Pantry is opinionated where it 
 ### Platform:
 
 * OS X 10.9, 10.10
+* Windows 8.1
 
-**Future (planned)**: Windows, Linux (Debian and RHEL families). See [Bugs](#bugs), below.
+It may work on other versions of these platforms with or without modification.
+
+**Future (planned)**: Linux (Debian and RHEL families). See [Bugs](#bugs), below.
 
 ## Bugs
 
 [Report issues in this repository](https://github.com/opscode/pantry-chef-repo/issues). We may close your issue and open it elsewhere if appropriate. For example, supporting other platforms is deferred to the [pantry cookbook](https://github.com/opscode-cookbooks/pantry)
 
-* [Windows support is not yet implemented](https://github.com/opscode-cookbooks/pantry/issues/1).
 * [Linux support is not yet implemented](https://github.com/opscode-cookbooks/pantry/issues/2).
 
 Homebrew cask prior to version 0.50.0 has [an issue](https://github.com/caskroom/homebrew-cask/issues/7946) fixed in 0.50.0+ that requires upgrading `brew-cask`. TL;DR:
@@ -137,7 +136,7 @@ brew update && brew upgrade brew-cask && brew cleanup
 ## License and Author
 
 - Author: Joshua Timberman <joshua@chef.io>
-- Copyright (C) 2014, Chef Software, Inc. <legal@chef.io>
+- Copyright (C) 2014-2015, Chef Software, Inc. <legal@chef.io>
 
 ```text
 Licensed under the Apache License, Version 2.0 (the "License");

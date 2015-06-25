@@ -36,3 +36,7 @@ dna.json
 # Vagrant
 Vagrantfile
 .vagrant/
+
+# Policyfile
+Policyfile.lock.json
+zero-repo
