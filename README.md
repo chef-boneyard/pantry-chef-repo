@@ -24,7 +24,7 @@ To just perform the installation:
 sudo ./bin/pantry
 ```
 
-To perform the installation and run Chef with the "base" role, use the `-c` option.
+To perform the installation and run Chef with the `pantry::default` recipe, use the `-c` option.
 
 ```
 sudo ./bin/pantry -c

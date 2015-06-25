@@ -83,7 +83,7 @@ then
     echo 'Running `chef-client` with the pantry default recipe.'
     /opt/chefdk/embedded/bin/chef-client -z -r 'recipe[pantry]'
 else
-    echo 'To have this script automatically run Chef with the "base" role, run:'
+    echo 'To have this script automatically run Chef with the "pantry::default" recipe, run:'
     echo "$0 -c"
     exit 0
 fi
