@@ -4,6 +4,7 @@ chef_repo_path File.join(current_dir, '..', 'zero-repo')
 
 # We'll use policyfiles with local mode.
 use_policyfile true
-deployment_group 'pantry-local'
+policy_group 'local'
+policy_name 'pantry'
 versioned_cookbooks true
-policy_document_native_api false
+policy_document_native_api true
